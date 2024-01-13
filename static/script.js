@@ -38,17 +38,17 @@ function createTextBlock() {
 
     let textBlock = document.createElement('div');
     textBlock.style.backgroundColor = bgColor;
-    textBlock.draggable = true;
 
     lines.forEach(line => {
         let textDiv = document.createElement('div');
+        textDiv.draggable = true;
         textDiv.textContent = line.children[0].value;
         textDiv.style.color = line.children[1].value;
         textDiv.style.fontSize = line.children[2].value + 'px';
         textBlock.appendChild(textDiv);
     });
 
-    let deleteBtn = document.createElement('span');
+    let deleteBtn = document.createElement('button');
     deleteBtn.textContent = '✖';
     deleteBtn.classList.add('delete-btn');
     deleteBtn.onclick = function() { this.parentNode.remove(); };
@@ -77,15 +77,11 @@ function setupDragAndDrop() {
     });
 
     document.addEventListener('dragstart', (event) => {
-        if (event.target.classList.contains('text-block')) {
             event.target.classList.add('dragging');
-        }
     });
 
     document.addEventListener('dragend', (event) => {
-        if (event.target.classList.contains('text-block')) {
             event.target.classList.remove('dragging');
-        }
     });
 }
 
