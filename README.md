@@ -15,7 +15,7 @@ This application allows users to create a customizable timetable. Users can add 
 4. **Download**: Click the 'Download Timetable' button to save your timetable as an image.
 
 ## Installation
-No installation required. Open `index.html` in a web browser to start using the application.
+No installation required. Run 'app.py' or 'index.html' to start using the application.
 
 ## Technologies Used
 - HTML
