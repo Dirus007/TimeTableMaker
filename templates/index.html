@@ -1,56 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Simple Timetable</title>
-    <link rel="stylesheet" type="text/css" href="../static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Timetable</title>
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
-        <table id="timetable">
-
-        <tr>
-            <th>Time/Day</th>
-            <th>8 - 9</th> <th>9 - 10</th> <th>10 - 11</th> <th>11 - 12</th>
-            <th>12 - 1</th> <th>1 - 2</th> <th>2 - 3</th> <th>3 - 4</th>
-            <th>4 - 5</th> <th>5 - 6</th>
-        </tr>
-
-        <tr>
-            <td>Monday</td>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-        </tr>
-
-        <tr>
-            <td>Tuesday</td>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-        </tr>
-
-        <tr>
-            <td>Wednesday</td>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-        </tr>
-
-        <tr>
-            <td>Thursday</td>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-        </tr>
-
-        <tr>
-            <td>Friday</td>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-        </tr>
-
-    </table>
-
-    <button id="addCourseBtn">Add Course</button>
-    <div id="courseForm" style="display:none;">
-        <input type="text" id="courseName" placeholder="Course Name">
-        <input type="text" id="courseCode" placeholder="Course Code">
-        <input type="text" id="teacherName" placeholder="Teacher Name">
-        <input type="color" id="courseColor" placeholder="Course Color">
-        <button onclick="addCourse()">Submit</button>
+    <div id="timetableControls">
+        <button onclick="addRow()">Add Row</button>
+        <button onclick="removeRow()">Remove Row</button>
+        <button onclick="addColumn()">Add Column</button>
+        <button onclick="removeColumn()">Remove Column</button>
+        <input type="number" id="cellHeight" placeholder="Cell Height (px)" onchange="updateCellSize()">
+        <input type="number" id="cellWidth" placeholder="Cell Width (px)" onchange="updateCellSize()">
     </div>
-    <div id="courseContainer"></div>
-
-    <script src="../static/script.js"></script>
+    <div id="timetable"></div>
+    <div id="objectCreationPanel">
+        <input type="color" id="bgColor">
+        <div id="linesContainer"></div>
+        <button onclick="addLine()">Add Line</button>
+        <button onclick="createTextBlock()">Create Text Block</button>
+    </div>
+    <button id="downloadBtn">Download Timetable</button>
+    <script src="static/script.js"></script>
 </body>
 </html>

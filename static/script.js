@@ -1,74 +1,179 @@
-document.getElementById('addCourseBtn').addEventListener('click', function() {
-    document.getElementById('courseForm').style.display = 'block';
+document.addEventListener('DOMContentLoaded', () => {
+    initializeTimetable();
+    addLine();
+    setupDragAndDrop();
 });
 
-var timetable = document.getElementById('timetable');
-var timetableCells = timetable.getElementsByTagName('td');
+function initializeTimetable() {
+    const timetable = document.getElementById('timetable');
+    for (let i = 0; i < 25; i++) {
+        let cell = document.createElement('div');
+        cell.classList.add('cell');
+        timetable.appendChild(cell);
+    }
+}
 
-for (var i = 0; i < timetableCells.length; i++) {
-    var cell = timetableCells[i];
-    cell.addEventListener('dragover', function(event) {
-        event.preventDefault(); // Allow drop
+function addLine() {
+    const lineContainer = document.createElement('div');
+    lineContainer.classList.add('line');
+
+    const lineText = document.createElement('input');
+    lineText.type = 'text';
+    lineText.placeholder = 'Enter text';
+
+    const lineColor = document.createElement('input');
+    lineColor.type = 'color';
+
+    const lineSize = document.createElement('input');
+    lineSize.type = 'number';
+    lineSize.placeholder = 'Font size';
+
+    lineContainer.append(lineText, lineColor, lineSize);
+    document.getElementById('linesContainer').appendChild(lineContainer);
+}
+
+function createTextBlock() {
+    const bgColor = document.getElementById('bgColor').value;
+    const lines = document.querySelectorAll('.line');
+
+    let textBlock = document.createElement('div');
+    textBlock.style.backgroundColor = bgColor;
+    textBlock.draggable = true;
+
+    lines.forEach(line => {
+        let textDiv = document.createElement('div');
+        textDiv.textContent = line.children[0].value;
+        textDiv.style.color = line.children[1].value;
+        textDiv.style.fontSize = line.children[2].value + 'px';
+        textBlock.appendChild(textDiv);
     });
 
-    cell.addEventListener('drop', function(event) {
-        event.preventDefault();
-        var courseId = event.dataTransfer.getData('text/plain');
-        var courseDiv = document.getElementById(courseId);
-        if (courseDiv) {
-            // Calculate the day and time from the cell's position
-            var day = this.cellIndex - 1; // Subtract 1 to account for the time column
-            var time = this.parentNode.rowIndex - 1; // Subtract 1 to account for the header row
+    let deleteBtn = document.createElement('span');
+    deleteBtn.textContent = '✖';
+    deleteBtn.classList.add('delete-btn');
+    deleteBtn.onclick = function() { this.parentNode.remove(); };
 
-            // Update the content of the cell with the course information
-            var courseClone = courseDiv.cloneNode(true);
-            courseClone.style.position = 'static';
-            courseClone.style.left = '';
-            courseClone.style.top = '';
-            courseClone.dropped = true;
+    textBlock.appendChild(deleteBtn);
+    document.getElementById('objectCreationPanel').appendChild(textBlock);
+}
 
-            // Set the background color of the course div
-            courseClone.style.backgroundColor = courseDiv.style.backgroundColor;
+function setupDragAndDrop() {
+    document.querySelectorAll('.cell').forEach(cell => {
+        cell.addEventListener('dragover', (event) => {
+            event.preventDefault();
+        });
 
-            // Clear the cell's previous content and append the course div
-            while (this.firstChild) {
-                this.removeChild(this.firstChild);
+        cell.addEventListener('drop', (event) => {
+            event.preventDefault();
+            let textBlock = document.querySelector('.dragging');
+            if (textBlock) {
+                cell.textContent = textBlock.textContent;
+                cell.style.color = textBlock.style.color;
+                cell.style.fontFamily = textBlock.style.fontFamily;
+                cell.style.fontSize = textBlock.style.fontSize;
+                cell.style.backgroundColor = textBlock.style.backgroundColor; // Ensure background color is copied
             }
-            this.appendChild(courseClone);
+        });
+    });
+
+    document.addEventListener('dragstart', (event) => {
+        if (event.target.classList.contains('text-block')) {
+            event.target.classList.add('dragging');
+        }
+    });
+
+    document.addEventListener('dragend', (event) => {
+        if (event.target.classList.contains('text-block')) {
+            event.target.classList.remove('dragging');
         }
     });
 }
 
-function makeDraggable(element) {
-    element.draggable = true;
-    element.addEventListener('dragstart', function(event) {
-        event.dataTransfer.setData('text/plain', event.target.id);
-        event.target.style.opacity = '0.5';
-    });
-    element.addEventListener('dragend', function(event) {
-        event.target.style.opacity = '';
+function addDeleteFunctionality(block) {
+    const deleteBtn = block.querySelector('.delete-btn');
+    if (deleteBtn) {
+        deleteBtn.onclick = function() { this.parentNode.remove(); };
+    }
+}
+
+function updateCellSize() {
+    const cellHeight = document.getElementById('cellHeight').value;
+    const cellWidth = document.getElementById('cellWidth').value;
+    const cells = document.querySelectorAll('.cell');
+
+    cells.forEach(cell => {
+        if (cellHeight) {
+            cell.style.height = cellHeight + 'px';
+        }
+        if (cellWidth) {
+            cell.style.width = cellWidth + 'px';
+        }
     });
 }
 
-function addCourse() {
-    var courseName = document.getElementById('courseName').value;
-    var courseCode = document.getElementById('courseCode').value;
-    var teacherName = document.getElementById('teacherName').value;
-    var courseColor = document.getElementById('courseColor').value;
+function addRow() {
+    const timetable = document.getElementById('timetable');
+    let columnCount = getComputedStyle(timetable).gridTemplateColumns.split(' ').length;
+    for (let i = 0; i < columnCount; i++) {
+        let cell = document.createElement('div');
+        cell.classList.add('cell');
+        timetable.appendChild(cell);
+    }
+}
 
-    var courseDiv = document.createElement('div');
-    courseDiv.className = 'course';
-    courseDiv.innerHTML = courseName + '<br>( ' + courseCode + ' )<br> {' + teacherName + '}';
+function removeRow() {
+    const timetable = document.getElementById('timetable');
+    let columnCount = getComputedStyle(timetable).gridTemplateColumns.split(' ').length;
+    for (let i = 0; i < columnCount; i++) {
+        if (timetable.lastChild) {
+            timetable.removeChild(timetable.lastChild);
+        }
+    }
+}
+
+function addColumn() {
+    const timetable = document.getElementById('timetable');
+    let columnCount = getComputedStyle(timetable).gridTemplateColumns.split(' ').length;
+    let newColumnCount = columnCount + 1;
+    timetable.style.gridTemplateColumns = `repeat(${newColumnCount}, 1fr)`;
+    let rowCount = timetable.childElementCount / columnCount;
+    let totalCells = rowCount * newColumnCount;
+    adjustCellCount(timetable, totalCells);
+}
+
+function removeColumn() {
+    const timetable = document.getElementById('timetable');
+    let columnCount = getComputedStyle(timetable).gridTemplateColumns.split(' ').length;
+    if (columnCount > 1) {
+        let newColumnCount = columnCount - 1;
+        timetable.style.gridTemplateColumns = `repeat(${newColumnCount}, 1fr)`;
+        let rowCount = timetable.childElementCount / columnCount;
+        let totalCells = rowCount * newColumnCount;
+        adjustCellCount(timetable, totalCells);
+    }
+}
+
+function adjustCellCount(timetable, totalCells) {
+    while (timetable.childElementCount < totalCells) {
+        let cell = document.createElement('div');
+        cell.classList.add('cell');
+        timetable.appendChild(cell);
+    }
+    while (timetable.childElementCount > totalCells) {
+        timetable.removeChild(timetable.lastChild);
+    }
+}
 
 
-    courseDiv.style.backgroundColor = courseColor;
-    document.getElementById('courseContainer').appendChild(courseDiv);
+document.getElementById('downloadBtn').addEventListener('click', downloadTimetable);
 
-    makeDraggable(courseDiv);
-
-    document.getElementById('courseForm').style.display = 'none';
-    document.getElementById('courseName').value = '';
-    document.getElementById('courseCode').value = '';
-    document.getElementById('teacherName').value = '';
-    document.getElementById('courseColor').value = '#ffffff';
+function downloadTimetable() {
+    const timetable = document.getElementById('timetable');
+    html2canvas(timetable).then(canvas => {
+        let image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+        let link = document.createElement('a');
+        link.download = 'timetable.png';
+        link.href = image;
+        link.click();
+    });
 }
